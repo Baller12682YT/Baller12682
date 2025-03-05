@@ -1,0 +1,1158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fishing Help</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+theme: {
+extend: {
+colors: {
+primary: '#2563eb',
+secondary: '#0ea5e9'
+},
+borderRadius: {
+'none': '0px',
+'sm': '4px',
+DEFAULT: '8px',
+'md': '12px',
+'lg': '16px',
+'xl': '20px',
+'2xl': '24px',
+'3xl': '32px',
+'full': '9999px',
+'button': '8px'
+}
+}
+}
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+animation: fadeIn 0.5s ease-out forwards;
+}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+<header class="bg-white shadow-sm">
+<div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+<h1 class="text-3xl font-['Pacifico'] text-primary">Fishing Help</h1>
+<div class="flex items-center gap-6">
+<div class="relative">
+<div class="flex gap-2">
+<button id="countrySelector" class="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-button text-gray-700" onclick="toggleCountryDropdown()">
+<i class="ri-map-pin-line"></i>
+<span id="selectedCountry">United States</span>
+<i class="ri-arrow-down-s-line"></i>
+</button>
+<button id="citySelector" class="flex items-center gap-2 px-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-button text-gray-700" onclick="toggleCityDropdown()">
+<i class="ri-building-line"></i>
+<span id="selectedCity">New York</span>
+<i class="ri-arrow-down-s-line"></i>
+</button>
+</div>
+<div id="countryDropdown" class="hidden absolute top-full right-0 mt-2 w-64 bg-white rounded shadow-lg py-2 z-10">
+<div class="px-3 pb-2">
+<div class="relative">
+<input type="text" id="countrySearch" class="w-full pl-8 pr-3 py-2 text-sm border rounded-button" placeholder="Search countries..." oninput="filterCountries()">
+<i class="ri-search-line absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+</div>
+<div class="max-h-64 overflow-y-auto" id="countryList">
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('United States')">United States</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Canada')">Canada</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('United Kingdom')">United Kingdom</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('France')">France</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Germany')">Germany</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Italy')">Italy</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Spain')">Spain</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Norway')">Norway</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Sweden')">Sweden</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Finland')">Finland</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Denmark')">Denmark</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Netherlands')">Netherlands</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Belgium')">Belgium</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Switzerland')">Switzerland</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Austria')">Austria</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Poland')">Poland</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Czech Republic')">Czech Republic</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Ireland')">Ireland</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Iceland')">Iceland</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Russia')">Russia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Japan')">Japan</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('South Korea')">South Korea</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Australia')">Australia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('New Zealand')">New Zealand</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Brazil')">Brazil</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Argentina')">Argentina</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Chile')">Chile</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('South Africa')">South Africa</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Greece')">Greece</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Portugal')">Portugal</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Croatia')">Croatia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Thailand')">Thailand</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Vietnam')">Vietnam</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Indonesia')">Indonesia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Philippines')">Philippines</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Malaysia')">Malaysia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Singapore')">Singapore</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Maldives')">Maldives</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Fiji')">Fiji</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Hawaii')">Hawaii</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Bahamas')">Bahamas</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Jamaica')">Jamaica</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Barbados')">Barbados</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Mexico')">Mexico</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('China')">China</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('India')">India</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Turkey')">Turkey</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Egypt')">Egypt</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Morocco')">Morocco</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Kenya')">Kenya</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Nigeria')">Nigeria</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Saudi Arabia')">Saudi Arabia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('UAE')">UAE</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Israel')">Israel</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Peru')">Peru</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Colombia')">Colombia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Venezuela')">Venezuela</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Romania')">Romania</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Hungary')">Hungary</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Bulgaria')">Bulgaria</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Serbia')">Serbia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Slovakia')">Slovakia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Slovenia')">Slovenia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Estonia')">Estonia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Latvia')">Latvia</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Lithuania')">Lithuania</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Cyprus')">Cyprus</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Malta')">Malta</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Seychelles')">Seychelles</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Mauritius')">Mauritius</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Bora Bora')">Bora Bora</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Tahiti')">Tahiti</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Bali')">Bali</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Zanzibar')">Zanzibar</button>
+<button class="w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700" onclick="selectCountry('Palau')">Palau</button>
+</div>
+</div>
+</div>
+<div class="text-gray-600">
+<div id="currentDateTime" class="text-right"></div>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-7xl mx-auto px-4 py-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="bg-white rounded shadow-lg overflow-hidden transform transition-all hover:scale-[1.02] cursor-pointer">
+<img src="https://public.readdy.ai/ai/img_res/8d98c7fd7b55ad65130960529822d950.jpg" class="w-full h-64 object-cover object-top" alt="Regular Fishing">
+<div class="p-6">
+<h2 class="text-2xl font-bold mb-4">Regular Fishing</h2>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span>Water Temperature:</span>
+<span class="font-semibold">68°F</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Fish Activity:</span>
+<div class="flex items-center">
+<i class="ri-fish-line text-primary ri-lg"></i>
+<i class="ri-fish-line text-primary ri-lg"></i>
+<i class="ri-fish-line text-primary ri-lg"></i>
+<i class="ri-fish-line text-gray-300 ri-lg"></i>
+<i class="ri-fish-line text-gray-300 ri-lg"></i>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span>Best Time:</span>
+<span class="font-semibold">5:00 AM - 9:00 AM</span>
+</div>
+<div class="mt-4 bg-gray-50 rounded p-4">
+<h3 class="text-lg font-semibold mb-3">Recommended Gears</h3>
+<div class="space-y-2 mb-4">
+<div class="flex items-center gap-2">
+<i class="ri-tools-line text-primary"></i>
+<span>Fishing Rod & Reel</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-box-3-line text-primary"></i>
+<span>Tackle Box with Lures</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-t-shirt-line text-primary"></i>
+<span>Weather-appropriate Clothing</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-life-jacket-line text-primary"></i>
+<span>Life Jacket</span>
+</div>
+</div>
+<h3 class="text-lg font-semibold mb-3">Fish Species Chances</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between group relative">
+<span class="text-gray-600">Bass</span>
+<div class="flex items-center gap-2">
+<div class="w-32 bg-gray-200 rounded-full h-2">
+<div class="bg-primary rounded-full h-2" style="width: 85%"></div>
+</div>
+<i class="ri-information-line text-gray-400 cursor-help">
+<div class="hidden group-hover:block absolute right-0 top-6 w-48 p-2 bg-white shadow-lg rounded text-sm text-gray-600 z-10">
+Best baits: Plastic worms, Jigs, Crankbaits
+</div>
+</i>
+</div>
+</div>
+<div class="flex items-center justify-between group relative">
+<span class="text-gray-600">Trout</span>
+<div class="flex items-center gap-2">
+<div class="w-32 bg-gray-200 rounded-full h-2">
+<div class="bg-primary rounded-full h-2" style="width: 65%"></div>
+</div>
+<i class="ri-information-line text-gray-400 cursor-help">
+<div class="hidden group-hover:block absolute right-0 top-6 w-48 p-2 bg-white shadow-lg rounded text-sm text-gray-600 z-10">
+Best baits: PowerBait, Worms, Small spinners
+</div>
+</i>
+</div>
+</div>
+<div class="flex items-center justify-between group relative">
+<span class="text-gray-600">Pike</span>
+<div class="flex items-center gap-2">
+<div class="w-32 bg-gray-200 rounded-full h-2">
+<div class="bg-primary rounded-full h-2" style="width: 45%"></div>
+</div>
+<i class="ri-information-line text-gray-400 cursor-help">
+<div class="hidden group-hover:block absolute right-0 top-6 w-48 p-2 bg-white shadow-lg rounded text-sm text-gray-600 z-10">
+Best baits: Spoons, Large minnows, Swimbaits
+</div>
+</i>
+</div>
+</div>
+<div class="flex items-center justify-between group relative">
+<span class="text-gray-600">Catfish</span>
+<div class="flex items-center gap-2">
+<div class="w-32 bg-gray-200 rounded-full h-2">
+<div class="bg-primary rounded-full h-2" style="width: 35%"></div>
+</div>
+<i class="ri-information-line text-gray-400 cursor-help">
+<div class="hidden group-hover:block absolute right-0 top-6 w-48 p-2 bg-white shadow-lg rounded text-sm text-gray-600 z-10">
+Best baits: Cut bait, Chicken liver, Nightcrawlers
+</div>
+</i>
+</div>
+</div>
+</div>
+</div>
+<button onclick="showTravelTime()" class="block w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap text-center mt-4">Select Regular Fishing</button>
+<div id="travelTimeModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 animate-fade-in">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xl font-semibold">Travel Time Information</h3>
+<button onclick="hideTravelTime()" class="text-gray-400 hover:text-gray-600">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<i class="ri-time-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Estimated Travel Time</p>
+<p class="text-gray-600" id="travelTimeText">45 minutes by car</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-road-map-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Distance</p>
+<p class="text-gray-600" id="distanceText">28 miles</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-information-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Best Route</p>
+<p class="text-gray-600" id="routeText">Take Highway 101 North, then exit at Lake Road</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-calendar-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Best Days This Month</p>
+<div class="grid grid-cols-7 gap-1 mt-2">
+<div id="bestDaysContainer" class="col-span-7 flex flex-wrap gap-1">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<button onclick="hideTravelTime()" class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-button hover:bg-gray-200 transition-colors whitespace-nowrap">Close</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="bg-white rounded shadow-lg overflow-hidden transform transition-all hover:scale-[1.02] cursor-pointer">
+<img src="https://public.readdy.ai/ai/img_res/11a2db9b494ede41ba97c8bc01caeea4.jpg" class="w-full h-64 object-cover object-top" alt="Ice Fishing">
+<div class="p-6">
+<h2 class="text-2xl font-bold mb-4">Ice Fishing</h2>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span>Ice Thickness:</span>
+<span class="font-semibold">12 inches</span>
+</div>
+<div class="flex items-center justify-between">
+<span>Fish Activity:</span>
+<div class="flex items-center">
+<i class="ri-fish-line text-primary ri-lg"></i>
+<i class="ri-fish-line text-primary ri-lg"></i>
+<i class="ri-fish-line text-primary ri-lg"></i>
+<i class="ri-fish-line text-primary ri-lg"></i>
+<i class="ri-fish-line text-gray-300 ri-lg"></i>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span>Best Time:</span>
+<span class="font-semibold">6:00 AM - 10:00 AM</span>
+</div>
+<div class="mt-4 bg-gray-50 rounded p-4">
+<h3 class="text-lg font-semibold mb-3">Recommended Gears</h3>
+<div class="space-y-2 mb-4">
+<div class="flex items-center gap-2">
+<i class="ri-tools-line text-primary"></i>
+<span>Fishing Rod & Reel</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-box-3-line text-primary"></i>
+<span>Tackle Box with Lures</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-t-shirt-line text-primary"></i>
+<span>Weather-appropriate Clothing</span>
+</div>
+<div class="flex items-center gap-2">
+<i class="ri-life-jacket-line text-primary"></i>
+<span>Life Jacket</span>
+</div>
+</div>
+<h3 class="text-lg font-semibold mb-3">Fish Species Chances</h3>
+<div class="space-y-2">
+<div class="flex items-center justify-between group relative">
+<span class="text-gray-600">Northern Pike</span>
+<div class="flex items-center gap-2">
+<div class="w-32 bg-gray-200 rounded-full h-2">
+<div class="bg-primary rounded-full h-2" style="width: 90%"></div>
+</div>
+<i class="ri-information-line text-gray-400 cursor-help">
+<div class="hidden group-hover:block absolute right-0 top-6 w-48 p-2 bg-white shadow-lg rounded text-sm text-gray-600 z-10">
+Best baits: Tip-ups with minnows, Jigging spoons, Large swimbaits
+</div>
+</i>
+</div>
+</div>
+<div class="flex items-center justify-between group relative">
+<span class="text-gray-600">Lake Trout</span>
+<div class="flex items-center gap-2">
+<div class="w-32 bg-gray-200 rounded-full h-2">
+<div class="bg-primary rounded-full h-2" style="width: 75%"></div>
+</div>
+<i class="ri-information-line text-gray-400 cursor-help">
+<div class="hidden group-hover:block absolute right-0 top-6 w-48 p-2 bg-white shadow-lg rounded text-sm text-gray-600 z-10">
+Best baits: White tube jigs, Swedish Pimples, Live minnows
+</div>
+</i>
+</div>
+</div>
+<div class="flex items-center justify-between group relative">
+<span class="text-gray-600">Walleye</span>
+<div class="flex items-center gap-2">
+<div class="w-32 bg-gray-200 rounded-full h-2">
+<div class="bg-primary rounded-full h-2" style="width: 60%"></div>
+</div>
+<i class="ri-information-line text-gray-400 cursor-help">
+<div class="hidden group-hover:block absolute right-0 top-6 w-48 p-2 bg-white shadow-lg rounded text-sm text-gray-600 z-10">
+Best baits: Jigging Raps, Buck-Shot Rattle Spoons, Minnows
+</div>
+</i>
+</div>
+</div>
+<div class="flex items-center justify-between group relative">
+<span class="text-gray-600">Yellow Perch</span>
+<div class="flex items-center gap-2">
+<div class="w-32 bg-gray-200 rounded-full h-2">
+<div class="bg-primary rounded-full h-2" style="width: 45%"></div>
+</div>
+<i class="ri-information-line text-gray-400 cursor-help">
+<div class="hidden group-hover:block absolute right-0 top-6 w-48 p-2 bg-white shadow-lg rounded text-sm text-gray-600 z-10">
+Best baits: Small jigs, Wax worms, Minnow heads
+</div>
+</i>
+</div>
+</div>
+</div>
+</div>
+<button onclick="showIceFishingSpot()" class="block w-full bg-primary text-white py-2 px-4 rounded-button hover:bg-primary/90 transition-colors whitespace-nowrap text-center mt-4">Select Ice Fishing</button>
+<div id="iceFishingSpotModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+<div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 animate-fade-in">
+<div class="flex justify-between items-center mb-4">
+<h3 class="text-xl font-semibold">Ice Fishing Information</h3>
+<button onclick="hideIceFishingSpot()" class="text-gray-400 hover:text-gray-600">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="space-y-4">
+<div class="flex items-center gap-3">
+<i class="ri-time-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Estimated Travel Time</p>
+<p class="text-gray-600" id="iceTravelTimeText">45 minutes by car</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-road-map-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Distance</p>
+<p class="text-gray-600" id="iceDistanceText">28 miles</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-information-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Best Route</p>
+<p class="text-gray-600" id="iceRouteText">Take Highway 101 North, then exit at Lake Road</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-map-pin-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Location</p>
+<p class="text-gray-600" id="spotLocationText">Minnesota Lakes</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-thermometer-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Ice Conditions</p>
+<p class="text-gray-600" id="spotConditionsText">12 inches thick, stable and safe</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-compass-3-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Specific Spot</p>
+<p class="text-gray-600" id="spotDetailsText">North shore, near the pine forest area</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<i class="ri-calendar-line text-primary ri-lg"></i>
+<div>
+<p class="font-medium">Best Days This Month</p>
+<div class="grid grid-cols-7 gap-1 mt-2">
+<div id="iceBestDaysContainer" class="col-span-7 flex flex-wrap gap-1">
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="mt-6">
+<button onclick="hideIceFishingSpot()" class="w-full bg-gray-100 text-gray-700 py-2 px-4 rounded-button hover:bg-gray-200 transition-colors whitespace-nowrap">Close</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<script>
+const cityData = {
+'United States': ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'],
+'Canada': ['Toronto', 'Montreal', 'Vancouver', 'Calgary', 'Edmonton', 'Ottawa', 'Quebec City', 'Winnipeg', 'Hamilton', 'Halifax'],
+'United Kingdom': ['London', 'Manchester', 'Birmingham', 'Glasgow', 'Liverpool', 'Leeds', 'Sheffield', 'Edinburgh', 'Bristol', 'Cardiff'],
+'France': ['Paris', 'Marseille', 'Lyon', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille'],
+'Germany': ['Berlin', 'Hamburg', 'Munich', 'Cologne', 'Frankfurt', 'Stuttgart', 'Düsseldorf', 'Leipzig', 'Dortmund', 'Essen'],
+'Italy': ['Rome', 'Milan', 'Naples', 'Turin', 'Palermo', 'Genoa', 'Bologna', 'Florence', 'Bari', 'Catania'],
+'Spain': ['Madrid', 'Barcelona', 'Valencia', 'Seville', 'Zaragoza', 'Málaga', 'Murcia', 'Palma', 'Las Palmas', 'Bilbao'],
+'Norway': ['Oslo', 'Bergen', 'Trondheim', 'Stavanger', 'Drammen', 'Fredrikstad', 'Kristiansand', 'Sandnes', 'Tromsø', 'Sarpsborg'],
+'Sweden': ['Stockholm', 'Gothenburg', 'Malmö', 'Uppsala', 'Västerås', 'Örebro', 'Linköping', 'Helsingborg', 'Jönköping', 'Norrköping'],
+'Finland': ['Helsinki', 'Espoo', 'Tampere', 'Vantaa', 'Oulu', 'Turku', 'Jyväskylä', 'Lahti', 'Kuopio', 'Pori'],
+'Denmark': ['Copenhagen', 'Aarhus', 'Odense', 'Aalborg', 'Frederiksberg', 'Esbjerg', 'Gentofte', 'Gladsaxe', 'Randers', 'Kolding'],
+'Netherlands': ['Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht', 'Eindhoven', 'Tilburg', 'Groningen', 'Almere', 'Breda', 'Nijmegen'],
+'Belgium': ['Brussels', 'Antwerp', 'Ghent', 'Charleroi', 'Liège', 'Bruges', 'Namur', 'Leuven', 'Mons', 'Aalst'],
+'Switzerland': ['Zurich', 'Geneva', 'Basel', 'Lausanne', 'Bern', 'Winterthur', 'Lucerne', 'St. Gallen', 'Lugano', 'Biel'],
+'Austria': ['Vienna', 'Graz', 'Linz', 'Salzburg', 'Innsbruck', 'Klagenfurt', 'Villach', 'Wels', 'Sankt Pölten', 'Dornbirn'],
+'Poland': ['Warsaw', 'Kraków', 'Łódź', 'Wrocław', 'Poznań', 'Gdańsk', 'Szczecin', 'Bydgoszcz', 'Lublin', 'Katowice'],
+'Czech Republic': ['Prague', 'Brno', 'Ostrava', 'Pilsen', 'Liberec', 'Olomouc', 'České Budějovice', 'Hradec Králové', 'Ústí nad Labem', 'Pardubice'],
+'Ireland': ['Dublin', 'Cork', 'Limerick', 'Galway', 'Waterford', 'Drogheda', 'Dundalk', 'Swords', 'Bray', 'Navan'],
+'Iceland': ['Reykjavík', 'Kópavogur', 'Hafnarfjörður', 'Akureyri', 'Reykjanesbær', 'Garðabær', 'Mosfellsbær', 'Árborg', 'Akranes', 'Fjarðabyggð'],
+'Russia': ['Moscow', 'Saint Petersburg', 'Novosibirsk', 'Yekaterinburg', 'Nizhny Novgorod', 'Kazan', 'Chelyabinsk', 'Omsk', 'Samara', 'Rostov-on-Don'],
+'Japan': ['Tokyo', 'Yokohama', 'Osaka', 'Nagoya', 'Sapporo', 'Fukuoka', 'Kobe', 'Kyoto', 'Kawasaki', 'Saitama'],
+'South Korea': ['Seoul', 'Busan', 'Incheon', 'Daegu', 'Daejeon', 'Gwangju', 'Suwon', 'Ulsan', 'Seongnam', 'Goyang'],
+'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Gold Coast', 'Newcastle', 'Canberra', 'Wollongong', 'Logan City'],
+'New Zealand': ['Auckland', 'Wellington', 'Christchurch', 'Hamilton', 'Tauranga', 'Napier-Hastings', 'Dunedin', 'Palmerston North', 'Nelson', 'Rotorua'],
+'Brazil': ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador', 'Fortaleza', 'Belo Horizonte', 'Manaus', 'Curitiba', 'Recife', 'Porto Alegre'],
+'Argentina': ['Buenos Aires', 'Córdoba', 'Rosario', 'Mendoza', 'San Miguel de Tucumán', 'La Plata', 'Mar del Plata', 'Salta', 'Santa Fe', 'San Juan'],
+'Chile': ['Santiago', 'Valparaíso', 'Concepción', 'La Serena', 'Antofagasta', 'Temuco', 'Rancagua', 'Talca', 'Arica', 'Chillán'],
+'South Africa': ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria', 'Port Elizabeth', 'Bloemfontein', 'Nelspruit', 'Kimberley', 'Polokwane', 'Pietermaritzburg'],
+'Greece': ['Athens', 'Thessaloniki', 'Patras', 'Heraklion', 'Larissa', 'Volos', 'Rhodes', 'Ioannina', 'Chania', 'Chalcis'],
+'Portugal': ['Lisbon', 'Porto', 'Vila Nova de Gaia', 'Amadora', 'Braga', 'Setúbal', 'Coimbra', 'Funchal', 'Almada', 'Queluz'],
+'Croatia': ['Zagreb', 'Split', 'Rijeka', 'Osijek', 'Zadar', 'Pula', 'Slavonski Brod', 'Karlovac', 'Varaždin', 'Šibenik'],
+'Thailand': ['Bangkok', 'Nonthaburi', 'Nakhon Ratchasima', 'Chiang Mai', 'Hat Yai', 'Udon Thani', 'Pak Kret', 'Nakhon Sawan', 'Ubon Ratchathani', 'Chon Buri'],
+'Vietnam': ['Ho Chi Minh City', 'Hanoi', 'Hai Phong', 'Da Nang', 'Can Tho', 'Bien Hoa', 'Nha Trang', 'Hue', 'Vinh', 'Qui Nhon'],
+'Indonesia': ['Jakarta', 'Surabaya', 'Bandung', 'Medan', 'Semarang', 'Makassar', 'Palembang', 'Tangerang', 'Bogor', 'Batam'],
+'Philippines': ['Manila', 'Quezon City', 'Davao City', 'Caloocan', 'Cebu City', 'Zamboanga City', 'Taguig', 'Antipolo', 'Pasig', 'Cagayan de Oro'],
+'Malaysia': ['Kuala Lumpur', 'George Town', 'Ipoh', 'Shah Alam', 'Petaling Jaya', 'Johor Bahru', 'Melaka', 'Kota Kinabalu', 'Seremban', 'Kuching'],
+'Singapore': ['Singapore Central', 'Woodlands', 'Tampines', 'Jurong East', 'Punggol', 'Sengkang', 'Hougang', 'Yishun', 'Ang Mo Kio', 'Bedok'],
+'Maldives': ['Malé', 'Addu City', 'Fuvahmulah', 'Kulhudhuffushi', 'Thinadhoo', 'Naifaru', 'Hinnavaru', 'Muli', 'Eydhafushi', 'Kudahuvadhoo'],
+'Fiji': ['Suva', 'Lautoka', 'Nadi', 'Labasa', 'Ba', 'Savusavu', 'Sigatoka', 'Levuka', 'Navua', 'Rakiraki'],
+'Hawaii': ['Honolulu', 'Pearl City', 'Hilo', 'Kailua', 'Waipahu', 'Kaneohe', 'Mililani Town', 'Kahului', 'Ewa Gentry', 'Kihei'],
+'Bahamas': ['Nassau', 'Freeport', 'West End', 'Coopers Town', 'Marsh Harbour', 'High Rock', 'Andros Town', 'Clarence Town', 'Duncan Town', 'Matthew Town'],
+'Jamaica': ['Kingston', 'Montego Bay', 'Spanish Town', 'Portmore', 'Mandeville', 'May Pen', 'Old Harbour', 'Linstead', 'Half Way Tree', 'Port Antonio'],
+'Barbados': ['Bridgetown', 'Speightstown', 'Oistins', 'Holetown', 'Bathsheba', 'Blackmans', 'Crane', 'Crab Hill', 'Greenland', 'Six Cross Roads'],
+'Mexico': ['Mexico City', 'Guadalajara', 'Monterrey', 'Puebla', 'Tijuana', 'León', 'Juárez', 'Zapopan', 'Mérida', 'San Luis Potosí'],
+'China': ['Shanghai', 'Beijing', 'Guangzhou', 'Shenzhen', 'Chongqing', 'Tianjin', 'Wuhan', 'Dongguan', 'Chengdu', 'Nanjing'],
+'India': ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad', 'Pune', 'Surat', 'Jaipur'],
+'Turkey': ['Istanbul', 'Ankara', 'Izmir', 'Bursa', 'Antalya', 'Adana', 'Gaziantep', 'Konya', 'Mersin', 'Diyarbakır'],
+'Egypt': ['Cairo', 'Alexandria', 'Giza', 'Shubra El Kheima', 'Port Said', 'Suez', 'Luxor', 'Mansoura', 'El-Mahalla El-Kubra', 'Tanta'],
+'Morocco': ['Casablanca', 'Rabat', 'Fes', 'Marrakesh', 'Tangier', 'Agadir', 'Meknes', 'Oujda', 'Kenitra', 'Tetouan'],
+'Kenya': ['Nairobi', 'Mombasa', 'Kisumu', 'Nakuru', 'Eldoret', 'Malindi', 'Kitale', 'Garissa', 'Kakamega', 'Nyeri'],
+'Nigeria': ['Lagos', 'Kano', 'Ibadan', 'Abuja', 'Port Harcourt', 'Benin City', 'Maiduguri', 'Zaria', 'Aba', 'Jos'],
+'Saudi Arabia': ['Riyadh', 'Jeddah', 'Mecca', 'Medina', 'Dammam', 'Taif', 'Tabuk', 'Buraidah', 'Khamis Mushait', 'Hail'],
+'UAE': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Al Ain', 'Ajman', 'Ras Al Khaimah', 'Fujairah', 'Umm Al Quwain', 'Dibba Al-Fujairah', 'Madinat Zayed'],
+'Israel': ['Jerusalem', 'Tel Aviv', 'Haifa', 'Rishon LeZion', 'Petah Tikva', 'Ashdod', 'Netanya', 'Beer Sheva', 'Holon', 'Bnei Brak'],
+'Peru': ['Lima', 'Arequipa', 'Trujillo', 'Chiclayo', 'Piura', 'Iquitos', 'Cusco', 'Huancayo', 'Tacna', 'Ica'],
+'Colombia': ['Bogotá', 'Medellín', 'Cali', 'Barranquilla', 'Cartagena', 'Cúcuta', 'Soledad', 'Ibagué', 'Bucaramanga', 'Soacha'],
+'Venezuela': ['Caracas', 'Maracaibo', 'Valencia', 'Barquisimeto', 'Maracay', 'Ciudad Guayana', 'Barcelona', 'Maturín', 'San Cristóbal', 'Ciudad Bolívar'],
+'Romania': ['Bucharest', 'Cluj-Napoca', 'Timișoara', 'Iași', 'Constanța', 'Craiova', 'Brașov', 'Galați', 'Ploiești', 'Oradea'],
+'Hungary': ['Budapest', 'Debrecen', 'Szeged', 'Miskolc', 'Pécs', 'Győr', 'Nyíregyháza', 'Kecskemét', 'Székesfehérvár', 'Szombathely'],
+'Bulgaria': ['Sofia', 'Plovdiv', 'Varna', 'Burgas', 'Ruse', 'Stara Zagora', 'Pleven', 'Sliven', 'Dobrich', 'Shumen'],
+'Serbia': ['Belgrade', 'Novi Sad', 'Niš', 'Kragujevac', 'Subotica', 'Zrenjanin', 'Pančevo', 'Čačak', 'Kraljevo', 'Smederevo'],
+'Slovakia': ['Bratislava', 'Košice', 'Prešov', 'Žilina', 'Banská Bystrica', 'Nitra', 'Trnava', 'Martin', 'Trenčín', 'Poprad'],
+'Slovenia': ['Ljubljana', 'Maribor', 'Celje', 'Kranj', 'Velenje', 'Koper', 'Novo Mesto', 'Ptuj', 'Trbovlje', 'Nova Gorica'],
+'Estonia': ['Tallinn', 'Tartu', 'Narva', 'Pärnu', 'Kohtla-Järve', 'Viljandi', 'Rakvere', 'Maardu', 'Sillamäe', 'Kuressaare'],
+'Latvia': ['Riga', 'Daugavpils', 'Liepāja', 'Jelgava', 'Jūrmala', 'Ventspils', 'Rēzekne', 'Valmiera', 'Jēkabpils', 'Ogre'],
+'Lithuania': ['Vilnius', 'Kaunas', 'Klaipėda', 'Šiauliai', 'Panevėžys', 'Alytus', 'Marijampolė', 'Mažeikiai', 'Jonava', 'Utena'],
+'Cyprus': ['Nicosia', 'Limassol', 'Larnaca', 'Paphos', 'Famagusta', 'Kyrenia', 'Morphou', 'Aradippou', 'Strovolos', 'Lakatamia'],
+'Malta': ['Valletta', 'Birkirkara', 'Qormi', 'Mosta', 'Zabbar', 'San Pawl il-Baħar', 'Sliema', 'Naxxar', 'Rabat', 'Fgura'],
+'Seychelles': ['Victoria', 'Anse Boileau', 'Beau Vallon', 'Cascade', 'Takamaka', 'Anse Royale', 'Port Glaud', 'Grand Anse', 'La Passe', 'Baie Lazare'],
+'Mauritius': ['Port Louis', 'Beau Bassin-Rose Hill', 'Vacoas-Phoenix', 'Curepipe', 'Quatre Bornes', 'Triolet', 'Goodlands', 'Centre de Flacq', 'Rose Belle', 'Mahébourg'],
+'Bora Bora': ['Vaitape', 'Anau', 'Faanui', 'Matira', 'Nunue', 'Pofai', 'Farepiti', 'Tevairoa', 'Tiipoto', 'Vairupe'],
+'Tahiti': ['Papeete', 'Faaa', 'Punaauia', 'Pirae', 'Mahina', 'Paea', 'Papara', 'Arue', 'Taravao', 'Mataiea'],
+'Bali': ['Denpasar', 'Kuta', 'Ubud', 'Seminyak', 'Sanur', 'Canggu', 'Jimbaran', 'Nusa Dua', 'Legian', 'Tabanan'],
+'Zanzibar': ['Zanzibar City', 'Nungwi', 'Kendwa', 'Paje', 'Jambiani', 'Matemwe', 'Kiwengwa', 'Uroa', 'Bwejuu', 'Kizimkazi'],
+'Palau': ['Koror', 'Melekeok', 'Ngerulmud', 'Kloulklubed', 'Mengellang', 'Ngarchelong', 'Ngardmau', 'Ngaraard', 'Airai', 'Peleliu']
+};
+function toggleCityDropdown() {
+const cityDropdown = document.getElementById('cityDropdown');
+if (!cityDropdown) {
+createCityDropdown();
+} else {
+cityDropdown.classList.toggle('hidden');
+}
+}
+function createCityDropdown() {
+const selectedCountry = document.getElementById('selectedCountry').textContent;
+const cities = cityData[selectedCountry] || [];
+const dropdown = document.createElement('div');
+dropdown.id = 'cityDropdown';
+dropdown.className = 'absolute top-full right-0 mt-2 w-64 bg-white rounded shadow-lg py-2 z-10';
+const searchContainer = document.createElement('div');
+searchContainer.className = 'px-3 pb-2';
+searchContainer.innerHTML = `
+<div class="relative">
+<input type="text" id="citySearch" class="w-full pl-8 pr-3 py-2 text-sm border rounded-button" placeholder="Search cities..." oninput="filterCities()">
+<i class="ri-search-line absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"></i>
+</div>
+`;
+const cityList = document.createElement('div');
+cityList.id = 'cityList';
+cityList.className = 'max-h-64 overflow-y-auto';
+cities.forEach(city => {
+const button = document.createElement('button');
+button.className = 'w-full px-4 py-2 text-left hover:bg-gray-50 text-gray-700';
+button.textContent = city;
+button.onclick = () => selectCity(city);
+cityList.appendChild(button);
+});
+dropdown.appendChild(searchContainer);
+dropdown.appendChild(cityList);
+document.getElementById('citySelector').parentNode.appendChild(dropdown);
+}
+function selectCity(city) {
+document.getElementById('selectedCity').textContent = city;
+document.getElementById('cityDropdown').classList.add('hidden');
+// Update fishing spots based on selected city
+updateFishingSpots();
+}
+function filterCities() {
+const searchInput = document.getElementById('citySearch');
+const filter = searchInput.value.toLowerCase();
+const cityList = document.getElementById('cityList');
+const cities = cityList.getElementsByTagName('button');
+for (let i = 0; i < cities.length; i++) {
+const cityName = cities[i].textContent || cities[i].innerText;
+if (cityName.toLowerCase().indexOf(filter) > -1) {
+cities[i].style.display = '';
+} else {
+cities[i].style.display = 'none';
+}
+}
+}
+function updateFishingSpots() {
+const selectedCountry = document.getElementById('selectedCountry').textContent;
+const selectedCity = document.getElementById('selectedCity').textContent;
+// Update fishing spots based on selected country and city
+// This is where you would add logic to update the fishing spots based on the selected city
+}
+function updateDateTime() {
+const now = new Date();
+const options = {
+weekday: 'long',
+year: 'numeric',
+month: 'long',
+day: 'numeric',
+hour: '2-digit',
+minute: '2-digit'
+};
+document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+}
+function toggleCountryDropdown() {
+const dropdown = document.getElementById('countryDropdown');
+dropdown.classList.toggle('hidden');
+}
+function selectCountry(country) {
+document.getElementById('selectedCountry').textContent = country;
+document.getElementById('countryDropdown').classList.add('hidden');
+document.getElementById('selectedCity').textContent = cityData[country]?.[0] || 'Select City';
+if (document.getElementById('cityDropdown')) {
+document.getElementById('cityDropdown').remove();
+}
+createCityDropdown();
+const fishingSpots = {
+'United States': {
+regular: { location: 'Lake Michigan - Best Spot: Grand Haven', temperature: '68°F', activity: 3 },
+ice: { location: 'Minnesota Lakes - Best Spot: Lake of the Woods', thickness: '12 inches', activity: 4 }
+},
+'Canada': {
+regular: { location: 'Lake Ontario - Best Spot: Bay of Quinte', temperature: '65°F', activity: 4 },
+ice: { location: 'Lake Simcoe - Best Spot: Cooks Bay', thickness: '14 inches', activity: 5 }
+},
+'United Kingdom': {
+regular: { location: 'Lake Windermere - Best Spot: Bowness Bay', temperature: '61°F', activity: 3 },
+ice: { location: 'Scottish Highlands - Best Spot: Loch Morlich', thickness: '8 inches', activity: 2 }
+},
+'France': {
+regular: { location: 'Lake Annecy', temperature: '66°F', activity: 4 },
+ice: { location: 'French Alps', thickness: '10 inches', activity: 3 }
+},
+'Germany': {
+regular: { location: 'Lake Constance', temperature: '65°F', activity: 4 },
+ice: { location: 'Bavarian Lakes', thickness: '11 inches', activity: 3 }
+},
+'Italy': {
+regular: { location: 'Lake Como', temperature: '67°F', activity: 5 },
+ice: { location: 'Alpine Lakes', thickness: '9 inches', activity: 2 }
+},
+'Spain': {
+regular: { location: 'Ebro River', temperature: '69°F', activity: 4 },
+ice: { location: 'Pyrenees Lakes', thickness: '8 inches', activity: 2 }
+},
+'Norway': {
+regular: { location: 'Mjøsa Lake - Best Spot: Gjøvik Harbor', temperature: '62°F', activity: 5 },
+ice: { location: 'Lake Randsfjorden - Best Spot: Horn Bridge', thickness: '16 inches', activity: 4 }
+},
+'Sweden': {
+regular: { location: 'Lake Vänern', temperature: '64°F', activity: 4 },
+ice: { location: 'Lake Storsjön', thickness: '15 inches', activity: 3 }
+},
+'Finland': {
+regular: { location: 'Lake Saimaa - Best Spot: Puumala Strait', temperature: '63°F', activity: 3 },
+ice: { location: 'Lake Inari - Best Spot: Nellim Bay', thickness: '18 inches', activity: 5 }
+},
+'Denmark': {
+regular: { location: 'Lake Esrum', temperature: '64°F', activity: 3 },
+ice: { location: 'Jutland Lakes', thickness: '10 inches', activity: 3 }
+},
+'Netherlands': {
+regular: { location: 'IJsselmeer', temperature: '65°F', activity: 4 },
+ice: { location: 'Frisian Lakes', thickness: '8 inches', activity: 2 }
+},
+'Belgium': {
+regular: { location: 'Meuse River', temperature: '66°F', activity: 3 },
+ice: { location: 'Ardennes Lakes', thickness: '7 inches', activity: 2 }
+},
+'Switzerland': {
+regular: { location: 'Lake Geneva', temperature: '64°F', activity: 4 },
+ice: { location: 'Alpine Lakes', thickness: '14 inches', activity: 4 }
+},
+'Austria': {
+regular: { location: 'Lake Wolfgangsee', temperature: '63°F', activity: 4 },
+ice: { location: 'Tyrolean Lakes', thickness: '13 inches', activity: 4 }
+},
+'Poland': {
+regular: { location: 'Masurian Lakes', temperature: '65°F', activity: 4 },
+ice: { location: 'Tatra Mountains', thickness: '12 inches', activity: 3 }
+},
+'Czech Republic': {
+regular: { location: 'Lipno Reservoir', temperature: '64°F', activity: 3 },
+ice: { location: 'Bohemian Lakes', thickness: '11 inches', activity: 3 }
+},
+'Ireland': {
+regular: { location: 'Lough Corrib', temperature: '62°F', activity: 4 },
+ice: { location: 'Northern Lakes', thickness: '6 inches', activity: 2 }
+},
+'Iceland': {
+regular: { location: 'Lake Þingvallavatn', temperature: '58°F', activity: 5 },
+ice: { location: 'Highland Lakes', thickness: '20 inches', activity: 5 }
+},
+'Russia': {
+regular: { location: 'Lake Ladoga', temperature: '61°F', activity: 4 },
+ice: { location: 'Siberian Lakes', thickness: '24 inches', activity: 5 }
+},
+'Japan': {
+regular: { location: 'Lake Biwa', temperature: '70°F', activity: 4 },
+ice: { location: 'Hokkaido Lakes', thickness: '10 inches', activity: 3 }
+},
+'South Korea': {
+regular: { location: 'Soyang Lake', temperature: '69°F', activity: 3 },
+ice: { location: 'Gangwon Lakes', thickness: '8 inches', activity: 2 }
+},
+'Australia': {
+regular: { location: 'Lake Eucumbene', temperature: '72°F', activity: 5 },
+ice: { location: 'Tasmania Lakes', thickness: '4 inches', activity: 1 }
+},
+'New Zealand': {
+regular: { location: 'Lake Taupo', temperature: '65°F', activity: 5 },
+ice: { location: 'Southern Alps Lakes', thickness: '6 inches', activity: 2 }
+},
+'Brazil': {
+regular: { location: 'Amazon River', temperature: '78°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Argentina': {
+regular: { location: 'Lake Nahuel Huapi', temperature: '62°F', activity: 4 },
+ice: { location: 'Patagonian Lakes', thickness: '8 inches', activity: 3 }
+},
+'Chile': {
+regular: { location: 'Lake Llanquihue', temperature: '61°F', activity: 4 },
+ice: { location: 'Andes Lakes', thickness: '10 inches', activity: 3 }
+},
+'South Africa': {
+regular: { location: 'Vaal Dam', temperature: '72°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Greece': {
+regular: { location: 'Lake Plastira', temperature: '70°F', activity: 4 },
+ice: { location: 'Mountain Lakes', thickness: '4 inches', activity: 1 }
+},
+'Portugal': {
+regular: { location: 'Alqueva Lake', temperature: '71°F', activity: 4 },
+ice: { location: 'Serra da Estrela Lakes', thickness: '3 inches', activity: 1 }
+},
+'Croatia': {
+regular: { location: 'Plitvice Lakes', temperature: '68°F', activity: 4 },
+ice: { location: 'Mountain Lakes', thickness: '6 inches', activity: 2 }
+},
+'Thailand': {
+regular: { location: 'Cheow Lan Lake', temperature: '82°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Vietnam': {
+regular: { location: 'Ba Be Lake', temperature: '80°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Indonesia': {
+regular: { location: 'Lake Toba', temperature: '79°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Philippines': {
+regular: { location: 'Taal Lake', temperature: '81°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Malaysia': {
+regular: { location: 'Kenyir Lake', temperature: '82°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Singapore': {
+regular: { location: 'Lower Seletar Reservoir', temperature: '83°F', activity: 3 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Maldives': {
+regular: { location: 'Indian Ocean Atolls', temperature: '84°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Fiji': {
+regular: { location: 'Pacific Ocean Reefs', temperature: '82°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Hawaii': {
+regular: { location: 'Pacific Ocean Coast', temperature: '78°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Bahamas': {
+regular: { location: 'Andros Barrier Reef', temperature: '80°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Jamaica': {
+regular: { location: 'Caribbean Sea Coast', temperature: '81°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Barbados': {
+regular: { location: 'Carlisle Bay', temperature: '82°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Mexico': {
+regular: { location: 'Lake Chapala', temperature: '75°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'China': {
+regular: { location: 'West Lake', temperature: '72°F', activity: 4 },
+ice: { location: 'Heilongjiang River', thickness: '16 inches', activity: 4 }
+},
+'India': {
+regular: { location: 'Chilika Lake', temperature: '78°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Turkey': {
+regular: { location: 'Lake Van', temperature: '68°F', activity: 4 },
+ice: { location: 'Eastern Lakes', thickness: '8 inches', activity: 2 }
+},
+'Egypt': {
+regular: { location: 'Lake Nasser', temperature: '76°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Morocco': {
+regular: { location: 'Lake Bin El Ouidane', temperature: '72°F', activity: 3 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Kenya': {
+regular: { location: 'Lake Victoria', temperature: '75°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Nigeria': {
+regular: { location: 'Lake Chad', temperature: '78°F', activity: 3 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Saudi Arabia': {
+regular: { location: 'Red Sea Coast', temperature: '82°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'UAE': {
+regular: { location: 'Dubai Creek', temperature: '84°F', activity: 3 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Israel': {
+regular: { location: 'Sea of Galilee', temperature: '74°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Peru': {
+regular: { location: 'Lake Titicaca', temperature: '60°F', activity: 4 },
+ice: { location: 'Andean Lakes', thickness: '6 inches', activity: 2 }
+},
+'Colombia': {
+regular: { location: 'Guatapé Reservoir', temperature: '76°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Venezuela': {
+regular: { location: 'Lake Maracaibo', temperature: '82°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Romania': {
+regular: { location: 'Danube Delta', temperature: '69°F', activity: 4 },
+ice: { location: 'Carpathian Lakes', thickness: '10 inches', activity: 3 }
+},
+'Hungary': {
+regular: { location: 'Lake Balaton', temperature: '68°F', activity: 4 },
+ice: { location: 'Lake Tisza', thickness: '9 inches', activity: 3 }
+},
+'Bulgaria': {
+regular: { location: 'Iskar Reservoir', temperature: '70°F', activity: 3 },
+ice: { location: 'Rila Lakes', thickness: '8 inches', activity: 2 }
+},
+'Serbia': {
+regular: { location: 'Iron Gates', temperature: '69°F', activity: 4 },
+ice: { location: 'Zlatibor Lakes', thickness: '7 inches', activity: 2 }
+},
+'Slovakia': {
+regular: { location: 'Orava Reservoir', temperature: '65°F', activity: 3 },
+ice: { location: 'High Tatras Lakes', thickness: '12 inches', activity: 4 }
+},
+'Slovenia': {
+regular: { location: 'Lake Bled', temperature: '66°F', activity: 4 },
+ice: { location: 'Julian Alps Lakes', thickness: '9 inches', activity: 3 }
+},
+'Estonia': {
+regular: { location: 'Lake Peipus', temperature: '62°F', activity: 4 },
+ice: { location: 'Lake Võrtsjärv', thickness: '14 inches', activity: 4 }
+},
+'Latvia': {
+regular: { location: 'Lake Razna', temperature: '63°F', activity: 3 },
+ice: { location: 'Gauja River', thickness: '12 inches', activity: 3 }
+},
+'Lithuania': {
+regular: { location: 'Lake Plateliai', temperature: '64°F', activity: 4 },
+ice: { location: 'Lake Galvė', thickness: '11 inches', activity: 3 }
+},
+'Cyprus': {
+regular: { location: 'Germasogeia Dam', temperature: '76°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Malta': {
+regular: { location: 'Mediterranean Coast', temperature: '75°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Seychelles': {
+regular: { location: 'Indian Ocean Reefs', temperature: '82°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Mauritius': {
+regular: { location: 'Blue Bay Marine Park', temperature: '79°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Bora Bora': {
+regular: { location: 'Bora Bora Lagoon', temperature: '81°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Tahiti': {
+regular: { location: 'Papeete Harbor', temperature: '80°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Bali': {
+regular: { location: 'Jimbaran Bay', temperature: '82°F', activity: 4 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Zanzibar': {
+regular: { location: 'Mnemba Atoll', temperature: '81°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+},
+'Palau': {
+regular: { location: 'Rock Islands', temperature: '83°F', activity: 5 },
+ice: { location: 'No ice fishing available', thickness: '0 inches', activity: 0 }
+}
+};
+const spot = fishingSpots[country];
+const regularFishingCard = document.querySelector('.grid > div:first-child');
+const iceFishingCard = document.querySelector('.grid > div:last-child');
+regularFishingCard.querySelector('h2').textContent = `Regular Fishing - ${spot.regular.location}`;
+const regularTemperature = regularFishingCard.querySelectorAll('.font-semibold')[0];
+const regularBestTime = regularFishingCard.querySelectorAll('.font-semibold')[1];
+regularTemperature.textContent = spot.regular.temperature;
+regularBestTime.textContent = '5:00 AM - 9:00 AM';
+updateFishActivity(regularFishingCard.querySelectorAll('.ri-fish-line'), spot.regular.activity);
+const fishSpecies = {
+'United States': { bass: 85, trout: 65, pike: 45, catfish: 35 },
+'Canada': { bass: 75, trout: 85, pike: 55, catfish: 25 },
+'United Kingdom': { bass: 65, trout: 75, pike: 65, catfish: 45 },
+// Add data for other countries...
+};
+const speciesData = fishSpecies[country] || { bass: 85, trout: 65, pike: 45, catfish: 35 };
+const progressBars = regularFishingCard.querySelectorAll('.bg-primary');
+let i = 0;
+for (const [species, chance] of Object.entries(speciesData)) {
+if (progressBars[i]) {
+progressBars[i].style.width = `${chance}%`;
+}
+i++;
+}
+iceFishingCard.querySelector('h2').textContent = `Ice Fishing - ${spot.ice.location}`;
+const iceThickness = iceFishingCard.querySelectorAll('.font-semibold')[0];
+const iceBestTime = iceFishingCard.querySelectorAll('.font-semibold')[1];
+iceThickness.textContent = spot.ice.thickness;
+iceBestTime.textContent = '6:00 AM - 10:00 AM';
+updateFishActivity(iceFishingCard.querySelectorAll('.ri-fish-line'), spot.ice.activity);
+}
+function updateFishActivity(fishIcons, activity) {
+fishIcons.forEach((icon, index) => {
+if (index < activity) {
+icon.classList.remove('text-gray-300');
+icon.classList.add('text-primary');
+} else {
+icon.classList.remove('text-primary');
+icon.classList.add('text-gray-300');
+}
+});
+}
+function showTravelTime() {
+const modal = document.getElementById('travelTimeModal');
+const selectedCountry = document.getElementById('selectedCountry').textContent;
+// Mock travel time data based on selected country
+const travelData = {
+'United States': { time: '45 minutes by car', distance: '28 miles', route: 'Take Highway 101 North, then exit at Lake Road' },
+'Canada': { time: '1 hour by car', distance: '35 miles', route: 'Follow Trans-Canada Highway, exit at Lake Ontario Drive' },
+'United Kingdom': { time: '30 minutes by car', distance: '15 miles', route: 'Take M1 North, exit at Lake District Junction' },
+// Add more countries as needed
+};
+const data = travelData[selectedCountry] || { time: '45 minutes by car', distance: '28 miles', route: 'Take the main road to the nearest fishing spot' };
+document.getElementById('travelTimeText').textContent = data.time;
+document.getElementById('distanceText').textContent = data.distance;
+document.getElementById('routeText').textContent = data.route;
+// Generate best days for fishing
+const bestDaysContainer = document.getElementById('bestDaysContainer');
+bestDaysContainer.innerHTML = '';
+// Get current date
+const currentDate = new Date();
+const currentMonth = currentDate.getMonth();
+const currentYear = currentDate.getFullYear();
+const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+// Generate random best days (between 8-12 days)
+const numBestDays = Math.floor(Math.random() * 5) + 8;
+const bestDays = new Set();
+while (bestDays.size < numBestDays) {
+const day = Math.floor(Math.random() * daysInMonth) + 1;
+bestDays.add(day);
+}
+// Create day elements
+for (let day = 1; day <= daysInMonth; day++) {
+const dayElement = document.createElement('div');
+dayElement.className = bestDays.has(day)
+? 'w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white text-sm cursor-help transition-colors'
+: 'w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 text-sm';
+dayElement.textContent = day;
+if (bestDays.has(day)) {
+const date = new Date(currentYear, currentMonth, day);
+const formattedDate = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+dayElement.title = `Great fishing conditions on ${formattedDate}`;
+}
+bestDaysContainer.appendChild(dayElement);
+}
+modal.classList.remove('hidden');
+}
+function hideTravelTime() {
+document.getElementById('travelTimeModal').classList.add('hidden');
+}
+function showIceFishingSpot() {
+const modal = document.getElementById('iceFishingSpotModal');
+const selectedCountry = document.getElementById('selectedCountry').textContent;
+// Mock travel time data based on selected country
+const travelData = {
+'United States': { time: '45 minutes by car', distance: '28 miles', route: 'Take Highway 101 North, then exit at Lake Road' },
+'Canada': { time: '1 hour by car', distance: '35 miles', route: 'Follow Trans-Canada Highway, exit at Lake Ontario Drive' },
+'Finland': { time: '30 minutes by car', distance: '15 miles', route: 'Take E75 North, exit at Inari Junction' },
+'Russia': { time: '2 hours by car', distance: '85 miles', route: 'Follow M56 Highway, turn at Siberian Lakes Exit' }
+};
+const spotData = {
+'United States': {
+location: 'Minnesota Lakes',
+conditions: '12 inches thick, stable and safe',
+details: 'North shore, near the pine forest area'
+},
+'Canada': {
+location: 'Lake Simcoe',
+conditions: '14 inches thick, excellent conditions',
+details: 'South bay, near the fishing huts'
+},
+'Finland': {
+location: 'Lake Inari',
+conditions: '18 inches thick, perfect conditions',
+details: 'Eastern shore, protected from winds'
+},
+'Russia': {
+location: 'Siberian Lakes',
+conditions: '24 inches thick, extremely stable',
+details: 'Western area, near the village'
+}
+};
+const travelInfo = travelData[selectedCountry] || { time: '45 minutes by car', distance: '28 miles', route: 'Take the main road to the nearest fishing spot' };
+const spotInfo = spotData[selectedCountry] || {
+location: 'Local Ice Fishing Spot',
+conditions: 'Check local conditions',
+details: 'Consult local fishing guides'
+};
+document.getElementById('iceTravelTimeText').textContent = travelInfo.time;
+document.getElementById('iceDistanceText').textContent = travelInfo.distance;
+document.getElementById('iceRouteText').textContent = travelInfo.route;
+document.getElementById('spotLocationText').textContent = spotInfo.location;
+document.getElementById('spotConditionsText').textContent = spotInfo.conditions;
+document.getElementById('spotDetailsText').textContent = spotInfo.details;
+// Generate best days for ice fishing
+const bestDaysContainer = document.getElementById('iceBestDaysContainer');
+bestDaysContainer.innerHTML = '';
+// Get current date
+const currentDate = new Date();
+const currentMonth = currentDate.getMonth();
+const currentYear = currentDate.getFullYear();
+const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+// Generate random best days (between 8-12 days)
+const numBestDays = Math.floor(Math.random() * 5) + 8;
+const bestDays = new Set();
+while (bestDays.size < numBestDays) {
+const day = Math.floor(Math.random() * daysInMonth) + 1;
+bestDays.add(day);
+}
+// Create day elements
+for (let day = 1; day <= daysInMonth; day++) {
+const dayElement = document.createElement('div');
+dayElement.className = bestDays.has(day)
+? 'w-8 h-8 flex items-center justify-center rounded-full bg-primary text-white text-sm cursor-help transition-colors'
+: 'w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-400 text-sm';
+dayElement.textContent = day;
+if (bestDays.has(day)) {
+const date = new Date(currentYear, currentMonth, day);
+const formattedDate = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+dayElement.title = `Great ice fishing conditions on ${formattedDate}`;
+}
+bestDaysContainer.appendChild(dayElement);
+}
+modal.classList.remove('hidden');
+}
+function hideIceFishingSpot() {
+document.getElementById('iceFishingSpotModal').classList.add('hidden');
+}
+function filterCountries() {
+const searchInput = document.getElementById('countrySearch');
+const filter = searchInput.value.toLowerCase();
+const countryList = document.getElementById('countryList');
+const countries = countryList.getElementsByTagName('button');
+for (let i = 0; i < countries.length; i++) {
+const countryName = countries[i].textContent || countries[i].innerText;
+if (countryName.toLowerCase().indexOf(filter) > -1) {
+countries[i].style.display = '';
+} else {
+countries[i].style.display = 'none';
+}
+}
+}
+document.addEventListener('click', function(event) {
+const countryDropdown = document.getElementById('countryDropdown');
+const cityDropdown = document.getElementById('cityDropdown');
+const countryButton = document.getElementById('countrySelector');
+const cityButton = document.getElementById('citySelector');
+const countrySearchInput = document.getElementById('countrySearch');
+const citySearchInput = document.getElementById('citySearch');
+if (countryDropdown && !countryDropdown.contains(event.target) && !countryButton.contains(event.target)) {
+countryDropdown.classList.add('hidden');
+if (countrySearchInput) {
+countrySearchInput.value = '';
+filterCountries();
+}
+}
+if (cityDropdown && !cityDropdown.contains(event.target) && !cityButton.contains(event.target)) {
+cityDropdown.classList.add('hidden');
+if (citySearchInput) {
+citySearchInput.value = '';
+filterCities();
+}
+}
+});
+document.getElementById('countrySearch').addEventListener('click', function(event) {
+event.stopPropagation();
+});
+updateDateTime();
+setInterval(updateDateTime, 60000);
+</script>
+</body>
+</html>
